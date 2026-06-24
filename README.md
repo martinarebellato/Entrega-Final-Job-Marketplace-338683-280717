@@ -29,14 +29,12 @@ El flujo principal es:
 
 ## Direcciones En Sepolia
 
-Completar esta seccion luego de desplegar en Sepolia.
-
 | Contrato | Direccion |
 | --- | --- |
-| `MockERC20` / payment token | `TODO` |
-| `Multisig` | `TODO` |
-| `JobMarketplace` | `TODO` |
-| Bloque de deploy de `JobMarketplace` | `TODO` |
+| `MockERC20` / payment token | `0xC1e3f234423d29FC1CbF5D6240564CE8e78478dF` |
+| `Multisig` | `0x75dbC8F71Bc229C441190642616364F38391b2fD` |
+| `JobMarketplace` | `0x23b17E2EF1541154ef167492657c535d6aBEd9ee` |
+| Bloque de deploy de `JobMarketplace` | `11131856` |
 
 El bloque de deploy se usa en el frontend como `VITE_MARKETPLACE_DEPLOY_BLOCK` para leer eventos `JobCreated` desde el bloque correcto.
 
@@ -227,7 +225,7 @@ El mismo diseno es compatible con otros contratos evaluadores, por ejemplo Safe 
 - Los deliverables se guardan en `localStorage`, no en IPFS ni base de datos. Esto esta permitido por la letra, pero limita el acceso a la entrega al mismo navegador donde se cargo.
 - El tablero lista los trabajos creados desde eventos `JobCreated`; para el badge de estado actual hace una lectura adicional con `getJob`.
 - El token `MockERC20` incluye `mint(address,uint256)` para facilitar pruebas manuales en Sepolia. No es un token productivo.
-- Las direcciones de Sepolia deben completarse en este README despues del deploy final.
+- Las direcciones Sepolia documentadas corresponden al deploy final del contrato corregido.
 
 ## Seguridad
 
