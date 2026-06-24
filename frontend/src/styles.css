@@ -190,6 +190,33 @@ dd {
   margin: 16px 0;
 }
 
+.job-actions {
+  display: grid;
+  gap: 12px;
+  border-top: 1px solid #dfe4ec;
+  padding-top: 16px;
+  margin-top: 16px;
+}
+
+.job-actions h3 {
+  margin: 0;
+}
+
+.inline-form,
+.stack-form {
+  display: grid;
+  gap: 10px;
+}
+
+.inline-form {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+}
+
+.inline-form .error {
+  grid-column: 1 / -1;
+}
+
 .deliverable-panel {
   display: grid;
   gap: 10px;
