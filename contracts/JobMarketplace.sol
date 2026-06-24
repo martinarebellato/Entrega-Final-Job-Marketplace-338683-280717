@@ -196,6 +196,10 @@ contract JobMarketplace is ReentrancyGuard {
             revert InvalidStatus(job.status);
         }
 
+        if (block.timestamp > job.expiresAt) {
+            revert JobExpired();
+        }
+
         if (job.provider == address(0)) {
             revert ProviderRequired();
         }

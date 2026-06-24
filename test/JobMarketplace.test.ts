@@ -291,6 +291,18 @@ describe("JobMarketplace", function () {
         initialClientBalance,
       );
     });
+
+    it("prevents the evaluator from completing a Submitted job after expiration", async function () {
+      const { evaluator, marketplace, createFundedAndSubmittedJob } =
+        await loadFixture(deployFixture);
+      const { jobId, expiresAt } = await createFundedAndSubmittedJob();
+
+      await time.increaseTo(expiresAt + 1);
+
+      await expect(
+        marketplace.connect(evaluator).complete(jobId, APPROVAL_REASON),
+      ).to.be.revertedWithCustomError(marketplace, "JobExpired");
+    });
   });
 
   describe("Access control", function () {
