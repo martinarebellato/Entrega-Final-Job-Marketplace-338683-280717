@@ -1,0 +1,21 @@
+{
+  "name": "job-marketplace-final",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:marketplace": "hardhat run scripts/deploy-marketplace.ts --network sepolia",
+    "deploy:multisig": "hardhat run scripts/deploy-multisig.ts --network sepolia"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@types/node": "^20.14.10",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.5",
+    "typescript": "^5.5.3"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2"
+  }
+}
