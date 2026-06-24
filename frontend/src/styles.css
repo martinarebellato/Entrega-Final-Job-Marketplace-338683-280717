@@ -179,7 +179,8 @@ dd {
   color: #384357;
 }
 
-.hash {
+.hash,
+.address {
   overflow-wrap: anywhere;
   font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
   font-size: 0.86rem;

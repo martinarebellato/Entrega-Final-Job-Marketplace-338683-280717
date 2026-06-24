@@ -1,5 +1,5 @@
 import { useJob } from "../hooks/useJob";
-import { formatDate, formatTokenAmount, shortAddress } from "../utils/format";
+import { formatDate, formatTokenAmount } from "../utils/format";
 import { DeliverablePanel } from "./DeliverablePanel";
 import { JobActions } from "./JobActions";
 import { StatusBadge } from "./StatusBadge";
@@ -31,15 +31,15 @@ export function JobDetail({ jobId }: { jobId?: bigint }) {
       <dl className="detail-grid">
         <div>
           <dt>Cliente</dt>
-          <dd>{shortAddress(job.client)}</dd>
+          <dd className="address">{job.client}</dd>
         </div>
         <div>
           <dt>Evaluador</dt>
-          <dd>{shortAddress(job.evaluator)}</dd>
+          <dd className="address">{job.evaluator}</dd>
         </div>
         <div>
           <dt>Proveedor</dt>
-          <dd>{shortAddress(job.provider)}</dd>
+          <dd className="address">{job.provider}</dd>
         </div>
         <div>
           <dt>Budget</dt>
