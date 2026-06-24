@@ -1,6 +1,11 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import { loadFixture, time } from "@nomicfoundation/hardhat-network-helpers";
+import {
+  JobMarketplace__factory,
+  MockERC20__factory,
+  Multisig__factory,
+} from "../typechain-types";
 
 enum JobStatus {
   Open,
@@ -28,11 +33,11 @@ describe("JobMarketplace", function () {
       signerThree,
     ] = await ethers.getSigners();
 
-    const MockERC20 = await ethers.getContractFactory("MockERC20");
-    const token = await MockERC20.deploy();
+    const token = await new MockERC20__factory(client).deploy();
 
-    const JobMarketplace = await ethers.getContractFactory("JobMarketplace");
-    const marketplace = await JobMarketplace.deploy(await token.getAddress());
+    const marketplace = await new JobMarketplace__factory(client).deploy(
+      await token.getAddress(),
+    );
 
     const budget = ethers.parseUnits("100", 18);
     const clientTestMint = ethers.parseUnits("1000", 18);
@@ -383,8 +388,7 @@ describe("JobMarketplace", function () {
         createFundedAndSubmittedJob,
       } = await loadFixture(deployFixture);
 
-      const Multisig = await ethers.getContractFactory("Multisig");
-      const multisig = await Multisig.deploy(
+      const multisig = await new Multisig__factory(evaluator).deploy(
         [evaluator.address, signerTwo.address, signerThree.address],
         2,
       );
