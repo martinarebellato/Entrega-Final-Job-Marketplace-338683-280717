@@ -4,9 +4,9 @@ Marketplace de trabajos sobre Ethereum Sepolia con escrow en ERC-20, evaluador c
 
 El flujo principal es:
 
-1. Un cliente publica un trabajo con descripcion, presupuesto, evaluador, proveedor opcional y fecha de expiracion.
+1. Un cliente publica un trabajo con descripción, presupuesto, evaluador, proveedor opcional y fecha de expiración.
 2. El cliente aprueba el token ERC-20 y fondea el escrow.
-3. El proveedor envia una entrega off-chain representada en el contrato como `bytes32`.
+3. El proveedor envía una entrega off-chain representada en el contrato como `bytes32`.
 4. El evaluador aprueba para liberar el pago al proveedor o rechaza para reembolsar al cliente.
 5. Si el trabajo expira estando `Funded` o `Submitted`, cualquier cuenta puede ejecutar `claimRefund`.
 
@@ -29,7 +29,7 @@ El flujo principal es:
 
 ## Direcciones En Sepolia
 
-| Contrato | Direccion |
+| Contrato | Dirección |
 | --- | --- |
 | `MockERC20` / payment token | `0xC1e3f234423d29FC1CbF5D6240564CE8e78478dF` |
 | `Multisig` | `0x75dbC8F71Bc229C441190642616364F38391b2fD` |
@@ -38,7 +38,7 @@ El flujo principal es:
 
 El bloque de deploy se usa en el frontend como `VITE_MARKETPLACE_DEPLOY_BLOCK` para leer eventos `JobCreated` desde el bloque correcto.
 
-## Instalacion
+## Instalación
 
 Instalar dependencias del proyecto Hardhat:
 
@@ -55,7 +55,7 @@ npm install
 
 ## Tests Y Validaciones
 
-Desde la raiz del repo:
+Desde la raíz del repo:
 
 ```bash
 npm run compile
@@ -70,16 +70,16 @@ npm run typecheck
 npm run build
 ```
 
-Validacion realizada:
+Validación realizada:
 
 - `npm run compile`: OK
 - `npm test`: OK, 23 tests pasando
 - `frontend/npm run typecheck`: OK
 - `frontend/npm run build`: OK
 
-## Configuracion De Deploy
+## Configuración De Deploy
 
-Crear `.env` en la raiz usando `.env.example` como base:
+Crear `.env` en la raíz usando `.env.example` como base:
 
 ```text
 SEPOLIA_RPC_URL=
@@ -134,7 +134,7 @@ Desplegar solo el JobMarketplace usando `PAYMENT_TOKEN_ADDRESS`:
 npm run deploy:marketplace
 ```
 
-## Configuracion Del Frontend
+## Configuración Del Frontend
 
 Crear `frontend/.env` usando `frontend/.env.example` como base:
 
@@ -146,7 +146,7 @@ VITE_MULTISIG_ADDRESS=
 VITE_MARKETPLACE_DEPLOY_BLOCK=
 ```
 
-Despues de `npm run deploy:all`, copiar:
+Después de `npm run deploy:all`, copiar:
 
 - `JOB_MARKETPLACE_ADDRESS` a `VITE_JOB_MARKETPLACE_ADDRESS`
 - `PAYMENT_TOKEN_ADDRESS` a `VITE_PAYMENT_TOKEN_ADDRESS`
@@ -167,44 +167,44 @@ El frontend funciona contra Sepolia. La wallet debe estar conectada a Sepolia y 
 ### Contrato
 
 - `createJob(description, budget, evaluator, provider, expiresAt)`: crea un trabajo `Open`.
-- `setProvider(jobId, provider)`: permite al cliente asignar proveedor si el trabajo esta `Open` y no tiene proveedor.
+- `setProvider(jobId, provider)`: permite al cliente asignar proveedor si el trabajo está `Open` y no tiene proveedor.
 - `fund(jobId)`: transfiere el presupuesto desde el cliente al escrow luego de `approve`.
 - `submit(jobId, deliverableRef)`: permite al proveedor enviar una referencia `bytes32`.
-- `complete(jobId, reason)`: permite al evaluador liberar fondos al proveedor si el trabajo esta `Submitted` y no expiro.
+- `complete(jobId, reason)`: permite al evaluador liberar fondos al proveedor si el trabajo está `Submitted` y no expiró.
 - `reject(jobId, reason)`: permite al cliente rechazar en `Open` o al evaluador rechazar en `Funded`/`Submitted`.
-- `claimRefund(jobId)`: permite a cualquiera reembolsar al cliente si el trabajo expiro estando `Funded` o `Submitted`.
+- `claimRefund(jobId)`: permite a cualquiera reembolsar al cliente si el trabajo expiró estando `Funded` o `Submitted`.
 
-Las funciones que mueven fondos usan `nonReentrant` y `SafeERC20`. Las transiciones invalidas revierten con errores personalizados.
+Las funciones que mueven fondos usan `nonReentrant` y `SafeERC20`. Las transiciones inválidas revierten con errores personalizados.
 
 ### Frontend
 
-- Conexion de wallet con RainbowKit.
+- Conexión de wallet con RainbowKit.
 - Listado de trabajos leyendo eventos `JobCreated` y badge de estado actualizado con `getJob`.
 - Detalle de trabajo leyendo el struct completo con `getJob`, incluyendo direcciones completas.
 - Formulario para publicar trabajos.
-- Panel de acciones segun rol de la wallet conectada.
+- Panel de acciones según rol de la wallet conectada.
 - `approve` + `fund` para fondear trabajos.
-- Estados pendientes mientras confirma la transaccion.
-- Invalidacion de queries luego de confirmar escrituras.
-- Mensajes de error cuando una transaccion revierte o falla.
+- Estados pendientes mientras confirma la transacción.
+- Invalidación de queries luego de confirmar escrituras.
+- Mensajes de error cuando una transacción revierte o falla.
 
 ## Deliverables Off-Chain
 
 El contrato solo guarda `deliverableRef` como `bytes32`. El contenido de la entrega se guarda en `localStorage` del navegador.
 
-La referencia se calcula hasheando el contenido de la entrega. Esto evita guardar datos pesados en blockchain y mantiene el contrato alineado con la consigna, que permitia manejar entregables off-chain.
+La referencia se calcula hasheando el contenido de la entrega. Esto evita guardar datos pesados en blockchain y mantiene el contrato alineado con la consigna, que permitía manejar entregables off-chain.
 
-Limitacion: al usar `localStorage`, el evaluador debe usar el mismo navegador/dispositivo para ver el contenido guardado. En una version productiva se podria reemplazar por IPFS o una base de datos.
+Limitación: al usar `localStorage`, el evaluador debe usar el mismo navegador/dispositivo para ver el contenido guardado. En una versión productiva se podría reemplazar por IPFS o una base de datos.
 
 ## Multisig Como Evaluador
 
-El evaluador de un trabajo puede ser una wallet o un contrato. Si se quiere que el trabajo sea aprobado por el Multisig desplegado, al crear el trabajo se debe usar esta direccion como evaluador:
+El evaluador de un trabajo puede ser una wallet o un contrato. Si se quiere que el trabajo sea aprobado por el Multisig desplegado, al crear el trabajo se debe usar esta dirección como evaluador:
 
 ```text
 0x75dbC8F71Bc229C441190642616364F38391b2fD
 ```
 
-En ese caso, el boton normal de aprobacion del marketplace no aparece para una wallet individual, porque el evaluador del job es el contrato `Multisig`, no una de las cuentas firmantes. Las cuentas firmantes deben aprobar una propuesta en el contrato `Multisig`.
+En ese caso, el botón normal de aprobación del marketplace no aparece para una wallet individual, porque el evaluador del job es el contrato `Multisig`, no una de las cuentas firmantes. Las cuentas firmantes deben aprobar una propuesta en el contrato `Multisig`.
 
 Flujo:
 
@@ -213,7 +213,7 @@ Flujo:
 3. Aprobar la propuesta hasta alcanzar el threshold.
 4. Ejecutar la propuesta desde el Multisig.
 
-Cuando el Multisig ejecuta la llamada, `JobMarketplace` recibe `msg.sender == address(multisig)` y acepta la aprobacion.
+Cuando el Multisig ejecuta la llamada, `JobMarketplace` recibe `msg.sender == address(multisig)` y acepta la aprobación.
 
 Para el deploy documentado:
 
@@ -232,22 +232,22 @@ Ejemplo con Remix:
 5. Los signers llaman a `approveProposal(proposalId)`.
 6. Un signer llama a `executeProposal(proposalId)`.
 
-El mismo diseno es compatible con otros contratos evaluadores, por ejemplo Safe Wallet, siempre que ejecuten la llamada `complete(jobId, reason)`.
+El mismo diseño es compatible con otros contratos evaluadores, por ejemplo Safe Wallet, siempre que ejecuten la llamada `complete(jobId, reason)`.
 
-## Decisiones De Diseno
+## Decisiones De Diseño
 
-- El presupuesto es inmutable: se define en `createJob` y no puede modificarse despues.
-- El token de pago es unico por instancia de `JobMarketplace`: se pasa en el constructor para simplificar el escrow y evitar mezclar balances de distintos tokens.
+- El presupuesto es inmutable: se define en `createJob` y no puede modificarse después.
+- El token de pago es único por instancia de `JobMarketplace`: se pasa en el constructor para simplificar el escrow y evitar mezclar balances de distintos tokens.
 - `claimRefund` no tiene control de acceso: cualquier cuenta puede ejecutarlo una vez vencido el plazo, tal como pide la consigna.
-- Se usan eventos para las transiciones relevantes: creacion, asignacion de proveedor, fondeo, entrega, aprobacion, rechazo y reembolso.
+- Se usan eventos para las transiciones relevantes: creación, asignación de proveedor, fondeo, entrega, aprobación, rechazo y reembolso.
 - El frontend lista trabajos desde eventos `JobCreated` para no depender de un backend propio.
-- El estado actual se lee con `getJob`, porque el evento de creacion no alcanza para conocer cambios posteriores.
-- `complete` tambien valida la expiracion para que un evaluador no pueda aprobar un trabajo vencido y competir con `claimRefund`.
+- El estado actual se lee con `getJob`, porque el evento de creación no alcanza para conocer cambios posteriores.
+- `complete` también valida la expiración para que un evaluador no pueda aprobar un trabajo vencido y competir con `claimRefund`.
 - Los errores del contrato son personalizados para ahorrar gas y facilitar tests.
 
-## Desvios Y Limitaciones
+## Desvíos Y Limitaciones
 
-- Los deliverables se guardan en `localStorage`, no en IPFS ni base de datos. Esto esta permitido por la letra, pero limita el acceso a la entrega al mismo navegador donde se cargo.
+- Los deliverables se guardan en `localStorage`, no en IPFS ni base de datos. Esto está permitido por la letra, pero limita el acceso a la entrega al mismo navegador donde se cargó.
 - El tablero lista los trabajos creados desde eventos `JobCreated`; para el badge de estado actual hace una lectura adicional con `getJob`.
 - El token `MockERC20` incluye `mint(address,uint256)` para facilitar pruebas manuales en Sepolia. No es un token productivo.
 - Las direcciones Sepolia documentadas corresponden al deploy final del contrato corregido.
@@ -257,6 +257,6 @@ El mismo diseno es compatible con otros contratos evaluadores, por ejemplo Safe 
 - Las funciones que transfieren fondos usan `nonReentrant`.
 - Los fondos se mueven con `SafeERC20`.
 - El contrato actualiza el estado antes de transferir tokens.
-- `complete` revierte con `JobExpired` si el trabajo ya vencio.
+- `complete` revierte con `JobExpired` si el trabajo ya venció.
 - `claimRefund` no depende de hooks ni permisos especiales.
 - Las claves privadas y RPC URLs deben mantenerse fuera del repositorio en `.env`.
