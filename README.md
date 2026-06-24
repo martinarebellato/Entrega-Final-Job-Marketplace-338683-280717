@@ -198,7 +198,15 @@ Limitacion: al usar `localStorage`, el evaluador debe usar el mismo navegador/di
 
 ## Multisig Como Evaluador
 
-El evaluador de un trabajo puede ser una wallet o un contrato. Si se usa `Multisig` como evaluador, los signers deben:
+El evaluador de un trabajo puede ser una wallet o un contrato. Si se quiere que el trabajo sea aprobado por el Multisig desplegado, al crear el trabajo se debe usar esta direccion como evaluador:
+
+```text
+0x75dbC8F71Bc229C441190642616364F38391b2fD
+```
+
+En ese caso, el boton normal de aprobacion del marketplace no aparece para una wallet individual, porque el evaluador del job es el contrato `Multisig`, no una de las cuentas firmantes. Las cuentas firmantes deben aprobar una propuesta en el contrato `Multisig`.
+
+Flujo:
 
 1. Crear una propuesta cuyo destino sea `JobMarketplace`.
 2. Usar como calldata la llamada `complete(jobId, reason)`.
@@ -206,6 +214,23 @@ El evaluador de un trabajo puede ser una wallet o un contrato. Si se usa `Multis
 4. Ejecutar la propuesta desde el Multisig.
 
 Cuando el Multisig ejecuta la llamada, `JobMarketplace` recibe `msg.sender == address(multisig)` y acepta la aprobacion.
+
+Para el deploy documentado:
+
+- `JobMarketplace`: `0x23b17E2EF1541154ef167492657c535d6aBEd9ee`
+- `Multisig`: `0x75dbC8F71Bc229C441190642616364F38391b2fD`
+- La propuesta debe llamar a `complete(jobId, reason)` sobre `JobMarketplace`.
+- Cada signer llama a `approveProposal(proposalId)`.
+- Una vez alcanzado el threshold, un signer llama a `executeProposal(proposalId)`.
+
+Ejemplo con Remix:
+
+1. Compilar `contracts/Multisig.sol`.
+2. En `Deploy & Run Transactions`, elegir `Injected Provider - MetaMask` en Sepolia.
+3. Cargar el contrato existente con `At Address` usando `0x75dbC8F71Bc229C441190642616364F38391b2fD`.
+4. Un signer llama a `createProposal(destination, value, data)`.
+5. Los signers llaman a `approveProposal(proposalId)`.
+6. Un signer llama a `executeProposal(proposalId)`.
 
 El mismo diseno es compatible con otros contratos evaluadores, por ejemplo Safe Wallet, siempre que ejecuten la llamada `complete(jobId, reason)`.
 
