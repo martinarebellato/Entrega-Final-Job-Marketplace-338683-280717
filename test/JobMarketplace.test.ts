@@ -35,9 +35,11 @@ describe("JobMarketplace", function () {
     const marketplace = await JobMarketplace.deploy(await token.getAddress());
 
     const budget = ethers.parseUnits("100", 18);
-    const initialClientBalance = ethers.parseUnits("1000", 18);
+    const clientTestMint = ethers.parseUnits("1000", 18);
 
-    await token.mint(client.address, initialClientBalance);
+    await token.mint(client.address, clientTestMint);
+
+    const initialClientBalance = await token.balanceOf(client.address);
 
     async function futureExpiration() {
       return (await time.latest()) + 60 * 60;
@@ -377,6 +379,7 @@ describe("JobMarketplace", function () {
         token,
         marketplace,
         budget,
+        initialClientBalance,
         createFundedAndSubmittedJob,
       } = await loadFixture(deployFixture);
 
@@ -415,7 +418,7 @@ describe("JobMarketplace", function () {
       expect(job.status).to.equal(JobStatus.Completed);
       expect(await token.balanceOf(provider.address)).to.equal(budget);
       expect(await token.balanceOf(client.address)).to.equal(
-        ethers.parseUnits("900", 18),
+        initialClientBalance - budget,
       );
     });
   });

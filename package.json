@@ -5,8 +5,10 @@
   "scripts": {
     "compile": "hardhat compile",
     "test": "hardhat test",
+    "deploy:token": "hardhat run scripts/deploy-token.ts --network sepolia",
     "deploy:marketplace": "hardhat run scripts/deploy-marketplace.ts --network sepolia",
-    "deploy:multisig": "hardhat run scripts/deploy-multisig.ts --network sepolia"
+    "deploy:multisig": "hardhat run scripts/deploy-multisig.ts --network sepolia",
+    "deploy:all": "hardhat run scripts/deploy-all.ts --network sepolia"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
