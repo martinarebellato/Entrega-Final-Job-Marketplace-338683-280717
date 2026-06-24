@@ -199,7 +199,8 @@ dd {
   margin-top: 16px;
 }
 
-.job-actions h3 {
+.job-actions h3,
+.multisig-panel h3 {
   margin: 0;
 }
 
@@ -218,11 +219,26 @@ dd {
   grid-column: 1 / -1;
 }
 
-.deliverable-panel {
+.deliverable-panel,
+.multisig-panel {
   display: grid;
   gap: 10px;
   border-top: 1px solid #dfe4ec;
   padding-top: 16px;
+}
+
+.compact-grid {
+  margin: 0;
+}
+
+.signer-list {
+  display: grid;
+  gap: 6px;
+}
+
+.signer-list code {
+  overflow-wrap: anywhere;
+  font-size: 0.8rem;
 }
 
 .status-badge {

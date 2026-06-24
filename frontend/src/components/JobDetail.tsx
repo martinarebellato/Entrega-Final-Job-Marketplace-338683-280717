@@ -2,6 +2,7 @@ import { useJob } from "../hooks/useJob";
 import { formatDate, formatTokenAmount } from "../utils/format";
 import { DeliverablePanel } from "./DeliverablePanel";
 import { JobActions } from "./JobActions";
+import { MultisigPanel } from "./MultisigPanel";
 import { StatusBadge } from "./StatusBadge";
 
 export function JobDetail({ jobId }: { jobId?: bigint }) {
@@ -55,6 +56,7 @@ export function JobDetail({ jobId }: { jobId?: bigint }) {
         </div>
       </dl>
       <JobActions jobId={jobId} job={job} />
+      <MultisigPanel jobId={jobId} job={job} />
       <DeliverablePanel jobId={jobId} deliverableRef={job.deliverableRef} />
     </section>
   );

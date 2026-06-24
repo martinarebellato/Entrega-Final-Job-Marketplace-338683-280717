@@ -183,6 +183,7 @@ Las funciones que mueven fondos usan `nonReentrant` y `SafeERC20`. Las transicio
 - Detalle de trabajo leyendo el struct completo con `getJob`, incluyendo direcciones completas.
 - Formulario para publicar trabajos.
 - Panel de acciones según rol de la wallet conectada.
+- Panel para operar propuestas del Multisig cuando el evaluador del trabajo es el contrato `Multisig`.
 - `approve` + `fund` para fondear trabajos.
 - Estados pendientes mientras confirma la transacción.
 - Invalidación de queries luego de confirmar escrituras.
@@ -206,12 +207,12 @@ El evaluador de un trabajo puede ser una wallet o un contrato. Si se quiere que 
 
 En ese caso, el botón normal de aprobación del marketplace no aparece para una wallet individual, porque el evaluador del job es el contrato `Multisig`, no una de las cuentas firmantes. Las cuentas firmantes deben aprobar una propuesta en el contrato `Multisig`.
 
-Flujo:
+Flujo desde la UI:
 
-1. Crear una propuesta cuyo destino sea `JobMarketplace`.
-2. Usar como calldata la llamada `complete(jobId, reason)`.
-3. Aprobar la propuesta hasta alcanzar el threshold.
-4. Ejecutar la propuesta desde el Multisig.
+1. Abrir un trabajo cuyo evaluador sea el contrato `Multisig` y cuyo estado sea `Submitted`.
+2. En el panel `Multisig`, un signer crea la propuesta de aprobación. La UI genera el calldata de `complete(jobId, reason)`.
+3. Cada signer conecta su wallet y llama a `approveProposal(proposalId)` desde el mismo panel.
+4. Una vez alcanzado el threshold, un signer ejecuta la propuesta con `executeProposal(proposalId)`.
 
 Cuando el Multisig ejecuta la llamada, `JobMarketplace` recibe `msg.sender == address(multisig)` y acepta la aprobación.
 
@@ -219,11 +220,11 @@ Para el deploy documentado:
 
 - `JobMarketplace`: `0x23b17E2EF1541154ef167492657c535d6aBEd9ee`
 - `Multisig`: `0x75dbC8F71Bc229C441190642616364F38391b2fD`
-- La propuesta debe llamar a `complete(jobId, reason)` sobre `JobMarketplace`.
+- La propuesta llama a `complete(jobId, reason)` sobre `JobMarketplace`.
 - Cada signer llama a `approveProposal(proposalId)`.
 - Una vez alcanzado el threshold, un signer llama a `executeProposal(proposalId)`.
 
-Ejemplo con Remix:
+Alternativa con Remix:
 
 1. Compilar `contracts/Multisig.sol`.
 2. En `Deploy & Run Transactions`, elegir `Injected Provider - MetaMask` en Sepolia.
