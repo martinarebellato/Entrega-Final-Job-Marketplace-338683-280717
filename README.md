@@ -59,6 +59,7 @@ Desde la raíz del repo:
 
 ```bash
 npm run compile
+npx hardhat test
 npm test
 npx tsc --noEmit
 ```
@@ -73,6 +74,7 @@ npm run build
 Validación realizada:
 
 - `npm run compile`: OK
+- `npx hardhat test`: OK, 23 tests pasando
 - `npm test`: OK, 23 tests pasando
 - `frontend/npm run typecheck`: OK
 - `frontend/npm run build`: OK
@@ -184,6 +186,7 @@ Las funciones que mueven fondos usan `nonReentrant` y `SafeERC20`. Las transicio
 - Formulario para publicar trabajos.
 - Panel de acciones según rol de la wallet conectada.
 - Panel para operar propuestas del Multisig cuando el evaluador del trabajo es el contrato `Multisig`.
+- Validación en el panel Multisig de que la propuesta cargada llame a `complete` sobre el job actual.
 - `approve` + `fund` para fondear trabajos.
 - Estados pendientes mientras confirma la transacción.
 - Invalidación de queries luego de confirmar escrituras.

@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { encodeFunctionData, keccak256, toBytes, type Address, type Hex } from "viem";
+import { encodeFunctionData, isAddressEqual, keccak256, toBytes, type Address, type Hex } from "viem";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 import {
   JOB_MARKETPLACE_ADDRESS,
@@ -45,6 +45,13 @@ const idleState: ActionState = {
   status: "idle",
   message: ""
 };
+
+const zeroBytes32 = `0x${"0".repeat(64)}` as const;
+const completeSelector = encodeFunctionData({
+  abi: jobMarketplaceAbi,
+  functionName: "complete",
+  args: [0n, zeroBytes32]
+}).slice(0, 10);
 
 function reasonHash(reason: string, jobId: bigint): Hex {
   return keccak256(toBytes(reason.trim() || `multisig-approved:${jobId.toString()}`));
@@ -164,6 +171,23 @@ export function MultisigPanel({ jobId, job }: MultisigPanelProps) {
     }
   });
 
+  const proposalMatchesJob = useMemo(() => {
+    if (!proposalQuery.data || !JOB_MARKETPLACE_ADDRESS) {
+      return undefined;
+    }
+
+    const encodedJobId = jobId.toString(16).padStart(64, "0").toLowerCase();
+    const proposalJobId = proposalQuery.data.data.slice(10, 74).toLowerCase();
+
+    return (
+      isAddressEqual(proposalQuery.data.destination, JOB_MARKETPLACE_ADDRESS) &&
+      proposalQuery.data.value === 0n &&
+      proposalQuery.data.data.slice(0, 10).toLowerCase() === completeSelector.toLowerCase() &&
+      proposalJobId === encodedJobId
+    );
+  }, [jobId, proposalQuery.data]);
+  const proposalIsLoadedAndInvalid = proposalMatchesJob === false;
+
   if (!isMultisigJob) {
     return null;
   }
@@ -248,6 +272,10 @@ export function MultisigPanel({ jobId, job }: MultisigPanelProps) {
         throw new Error("Ingresa un ID de propuesta válido.");
       }
 
+      if (proposalIsLoadedAndInvalid) {
+        throw new Error("La propuesta indicada no corresponde a este trabajo.");
+      }
+
       const hash = await walletClient!.writeContract({
         address: MULTISIG_ADDRESS!,
         abi: multisigAbi,
@@ -263,6 +291,10 @@ export function MultisigPanel({ jobId, job }: MultisigPanelProps) {
     await runAction("Propuesta ejecutada.", async () => {
       if (proposalId === undefined) {
         throw new Error("Ingresa un ID de propuesta válido.");
+      }
+
+      if (proposalIsLoadedAndInvalid) {
+        throw new Error("La propuesta indicada no corresponde a este trabajo.");
       }
 
       const hash = await walletClient!.writeContract({
@@ -340,14 +372,24 @@ export function MultisigPanel({ jobId, job }: MultisigPanelProps) {
         />
         <button
           type="button"
-          disabled={isPending || !multisigQuery.data?.isConnectedSigner || proposalId === undefined}
+          disabled={
+            isPending ||
+            !multisigQuery.data?.isConnectedSigner ||
+            proposalId === undefined ||
+            proposalIsLoadedAndInvalid
+          }
           onClick={() => void approveProposal()}
         >
           Aprobar propuesta
         </button>
         <button
           type="button"
-          disabled={isPending || !multisigQuery.data?.isConnectedSigner || proposalId === undefined}
+          disabled={
+            isPending ||
+            !multisigQuery.data?.isConnectedSigner ||
+            proposalId === undefined ||
+            proposalIsLoadedAndInvalid
+          }
           onClick={() => void executeProposal()}
         >
           Ejecutar
@@ -383,7 +425,17 @@ export function MultisigPanel({ jobId, job }: MultisigPanelProps) {
             <dt>Destino</dt>
             <dd className="address">{proposalQuery.data.destination}</dd>
           </div>
+          <div>
+            <dt>Corresponde al job</dt>
+            <dd>{proposalMatchesJob ? "Sí" : "No"}</dd>
+          </div>
         </dl>
+      )}
+
+      {proposalIsLoadedAndInvalid && (
+        <p className="error">
+          La propuesta cargada no apunta a `complete` de este trabajo en el marketplace configurado.
+        </p>
       )}
 
       {proposalQuery.isError && proposalId !== undefined && (
