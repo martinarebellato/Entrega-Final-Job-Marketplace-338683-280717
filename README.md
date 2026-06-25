@@ -1,4 +1,5 @@
-# Entrega Final - Job Marketplace
+# Entrega final - Job Marketplace
+## Estudiantes: Lucía Mendez (280717) y Martina Rebellato (338683)
 
 Marketplace de trabajos sobre Ethereum Sepolia con escrow en ERC-20, evaluador configurable y soporte para usar un contrato Multisig como evaluador.
 
@@ -27,7 +28,7 @@ El flujo principal es:
 
 `JobMarketplace` recibe el token ERC-20 en el constructor. Todos los trabajos creados en esa instancia se pagan con ese mismo token.
 
-## Direcciones En Sepolia
+## Direcciones en Sepolia
 
 | Contrato | Dirección |
 | --- | --- |
@@ -53,7 +54,7 @@ cd frontend
 npm install
 ```
 
-## Tests Y Validaciones
+## Tests y validaciones
 
 Desde la raíz del repo:
 
@@ -79,7 +80,21 @@ Validación realizada:
 - `frontend/npm run typecheck`: OK
 - `frontend/npm run build`: OK
 
-## Configuración De Deploy
+## Evidencias de funcionamiento
+
+Las siguientes capturas evidencian pruebas de funcionamiento del marketplace:
+
+![Evidencia 1](<evidencias/WhatsApp Image 2026-06-25 at 09.36.17 (1).jpeg>)
+
+![Evidencia 2](<evidencias/WhatsApp Image 2026-06-25 at 09.36.17.jpeg>)
+
+![Evidencia 3](<evidencias/WhatsApp Image 2026-06-25 at 09.36.18 (1).jpeg>)
+
+![Evidencia 4](<evidencias/WhatsApp Image 2026-06-25 at 09.36.18.jpeg>)
+
+![Evidencia 5](<evidencias/WhatsApp Image 2026-06-25 at 09.37.24.jpeg>)
+
+## Configuración de deploy
 
 Crear `.env` en la raíz usando `.env.example` como base:
 
@@ -100,7 +115,7 @@ MULTISIG_SIGNERS=0xSigner1,0xSigner2,0xSigner3
 MULTISIG_THRESHOLD=2
 ```
 
-### Deploy Completo
+### Deploy completo
 
 Para desplegar token de prueba, Multisig y JobMarketplace en una sola corrida:
 
@@ -116,7 +131,7 @@ El script imprime:
 - `MARKETPLACE_DEPLOY_BLOCK`
 - un bloque listo para copiar a `frontend/.env`
 
-### Deploy Por Partes
+### Deploy por partes
 
 Desplegar solo el token ERC-20 mock:
 
@@ -136,7 +151,7 @@ Desplegar solo el JobMarketplace usando `PAYMENT_TOKEN_ADDRESS`:
 npm run deploy:marketplace
 ```
 
-## Configuración Del Frontend
+## Configuración del frontend
 
 Crear `frontend/.env` usando `frontend/.env.example` como base:
 
@@ -164,7 +179,7 @@ npm run dev
 
 El frontend funciona contra Sepolia. La wallet debe estar conectada a Sepolia y tener ETH de prueba para pagar gas.
 
-## Funcionalidad Implementada
+## Funcionalidad implementada
 
 ### Contrato
 
@@ -192,7 +207,7 @@ Las funciones que mueven fondos usan `nonReentrant` y `SafeERC20`. Las transicio
 - Invalidación de queries luego de confirmar escrituras.
 - Mensajes de error cuando una transacción revierte o falla.
 
-## Deliverables Off-Chain
+## Entregables off-chain
 
 El contrato solo guarda `deliverableRef` como `bytes32`. El contenido de la entrega se guarda en `localStorage` del navegador.
 
@@ -200,7 +215,7 @@ La referencia se calcula hasheando el contenido de la entrega. Esto evita guarda
 
 Limitación: al usar `localStorage`, el evaluador debe usar el mismo navegador/dispositivo para ver el contenido guardado. En una versión productiva se podría reemplazar por IPFS o una base de datos.
 
-## Multisig Como Evaluador
+## Multisig como evaluador
 
 El evaluador de un trabajo puede ser una wallet o un contrato. Si se quiere que el trabajo sea aprobado por el Multisig desplegado, al crear el trabajo se debe usar esta dirección como evaluador:
 
@@ -238,7 +253,7 @@ Alternativa con Remix:
 
 El mismo diseño es compatible con otros contratos evaluadores, por ejemplo Safe Wallet, siempre que ejecuten la llamada `complete(jobId, reason)`.
 
-## Decisiones De Diseño
+## Decisiones de diseño
 
 - El presupuesto es inmutable: se define en `createJob` y no puede modificarse después.
 - El token de pago es único por instancia de `JobMarketplace`: se pasa en el constructor para simplificar el escrow y evitar mezclar balances de distintos tokens.
@@ -249,7 +264,7 @@ El mismo diseño es compatible con otros contratos evaluadores, por ejemplo Safe
 - `complete` también valida la expiración para que un evaluador no pueda aprobar un trabajo vencido y competir con `claimRefund`.
 - Los errores del contrato son personalizados para ahorrar gas y facilitar tests.
 
-## Desvíos Y Limitaciones
+## Desvíos y limitaciones
 
 - Los deliverables se guardan en `localStorage`, no en IPFS ni base de datos. Esto está permitido por la letra, pero limita el acceso a la entrega al mismo navegador donde se cargó.
 - El tablero lista los trabajos creados desde eventos `JobCreated`; para el badge de estado actual hace una lectura adicional con `getJob`.
